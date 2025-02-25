@@ -1,23 +1,29 @@
+import { FrameBuffer } from "./utils/FrameBuffer";
+
 type Props = {
-  frameBuffer: string[][];
+  frameBuffer: FrameBuffer;
 };
 
 export default function PixelGrid({ frameBuffer }: Props) {
+  if (!frameBuffer || frameBuffer.isEmpty()) {
+    return <div>No data available</div>;
+  }
+
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${frameBuffer[0].length}, 10px)`,
-        gridTemplateRows: `repeat(${frameBuffer.length}, 10px)`,
-        gap: "1px",
+        gridTemplateColumns: `repeat(${frameBuffer.buffer[0].length}, 60px)`,
+        gridTemplateRows: `repeat(${frameBuffer.buffer.length}, 60px)`,
+        gap: "0.2rem",
       }}
     >
-      {frameBuffer.flat().map((color, i) => (
+      {frameBuffer.buffer.flat().map((color, i) => (
         <div
           key={i}
           style={{
-            width: "10px",
-            height: "10px",
+            width: "60px",
+            height: "60px",
             backgroundColor: color,
           }}
         />

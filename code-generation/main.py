@@ -15,25 +15,36 @@ opcode_table = {
     "HALT": "00001100",  # 0x0C
 }
 
-program_text = """
-SET_COLOUR 255 0 0
-DRAW_RECT 1 1 5 10
-DRAW_RECT 1 6 5 2
-DRAW_RECT 1 1 2 10
-SET_COLOUR 0 255 0
-DRAW_RECT 8 1 5 10
-DRAW_RECT 8 5 5 2
-DRAW_RECT 12 1 2 10
-SET_COLOUR 0 0 255
-DRAW_RECT 16 1 2 10
-DRAW_RECT 18 2 2 8
-DRAW_RECT 20 1 2 10
+programme_text = """
+PUSH 128
+PUSH 52
+PUSH 235
+SET_COLOUR
+PUSH 1
+PUSH 1
+DRAW_PIXEL
+PUSH 3
+PUSH 1
+DRAW_PIXEL
+PUSH 52
+PUSH 219
+PUSH 235
+SET_COLOUR
+PUSH 1
+PUSH 3
+DRAW_PIXEL
+PUSH 2
+PUSH 3
+DRAW_PIXEL
+PUSH 3
+PUSH 3
+DRAW_PIXEL
 HALT
 """
 
-def assemble_program(program_text, opcode_table):
+def assemble_program(programme_text, opcode_table):
     binary_code = []
-    for line in program_text.strip().split("\n"):
+    for line in programme_text.strip().split("\n"):
         parts = line.split()
         mnemonic = parts[0]
         if mnemonic in opcode_table:
@@ -57,6 +68,6 @@ def generate_qr_code(binary_output):
     img.save("code-generation/qr.png")
 
 if __name__ == "__main__":
-    binary_output = assemble_program(program_text, opcode_table)
+    binary_output = assemble_program(programme_text, opcode_table)
     print("binary:", binary_output)
     generate_qr_code(binary_output)

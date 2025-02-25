@@ -1,3 +1,6 @@
+import { FrameBuffer } from "./FrameBuffer";
+import { Stack } from "./Stack";
+
 const OPCODE_TABLE: { [key: string]: string } = {
   PUSH: "00000001",
   POP: "00000010",
@@ -15,37 +18,45 @@ const OPCODE_TABLE: { [key: string]: string } = {
 
 export class VirtualMachine {
   binaryCode: string;
-  stack: number[];
-  ip: number;
-  frameBuffer: string[][];
+  stack: Stack;
+  instructionPointer: number;
+  frameBuffer: FrameBuffer;
   colour: string;
 
-  constructor(binaryCode: string, width = 16, height = 16) {
+  constructor(binaryCode: string) {
     this.binaryCode = binaryCode;
-    this.stack = [];
-    this.ip = 0;
-    this.frameBuffer = Array.from({ length: height }, () =>
-      Array(width).fill("#000000")
-    );
+    this.stack = new Stack();
+    this.instructionPointer = 0;
+    this.frameBuffer = new FrameBuffer(5, 5);
     this.colour = "#FFFFFF"; // Default white color
   }
 
   // Helper: Fetch next 8-bit opcode
   fetchByte(): string {
-    const byte = this.binaryCode.slice(this.ip, this.ip + 8);
-    this.ip += 8;
+    const opcodeSize = 8;
+    const byte = this.binaryCode.slice(
+      this.instructionPointer,
+      this.instructionPointer + opcodeSize
+    );
+    this.instructionPointer += opcodeSize;
     return byte;
   }
 
   // Helper: Fetch and decode 16-bit operand
   fetchOperand(): number {
-    const operand = this.binaryCode.slice(this.ip, this.ip + 16);
-    this.ip += 16;
+    const operandSize = 16;
+    const operand = this.binaryCode.slice(
+      this.instructionPointer,
+      this.instructionPointer + operandSize
+    );
+    this.instructionPointer += operandSize;
     return parseInt(operand, 2);
   }
 
-  execute(): string[][] {
-    while (this.ip < this.binaryCode.length) {
+  execute(): FrameBuffer {
+    while (this.instructionPointer < this.binaryCode.length) {
+      console.log("ip: ", this.instructionPointer);
+      console.log("stack: ", this.stack);
       const opcode = this.fetchByte();
 
       switch (opcode) {
@@ -60,7 +71,7 @@ export class VirtualMachine {
 
         case OPCODE_TABLE["DUP"]:
           if (this.stack.length > 0) {
-            this.stack.push(this.stack[this.stack.length - 1]);
+            this.stack.push(this.stack.get(this.stack.length - 1));
           }
           break;
 
@@ -80,27 +91,35 @@ export class VirtualMachine {
           }
           break;
 
+        case OPCODE_TABLE["MUL"]:
+          if (this.stack.length >= 2) {
+            const b = this.stack.pop()!;
+            const a = this.stack.pop()!;
+            this.stack.push(a * b);
+          }
+          break;
+
+        case OPCODE_TABLE["DIV"]:
+          if (this.stack.length >= 2) {
+            const b = this.stack.pop()!;
+            const a = this.stack.pop()!;
+            this.stack.push(a / b);
+          }
+          break;
+
         case OPCODE_TABLE["SET_COLOUR"]:
-          const r = this.fetchOperand();
-          console.log("r: ", r);
-          const g = this.fetchOperand();
-          console.log("g: ", g);
-          const b = this.fetchOperand();
-          console.log("b: ", b);
+          console.log("SET_COLOUR");
+          const b = this.stack.pop()!;
+          const g = this.stack.pop()!;
+          const r = this.stack.pop()!;
           this.colour = `rgb(${r}, ${g}, ${b})`;
           break;
 
         case OPCODE_TABLE["DRAW_PIXEL"]:
+          console.log("DRAW_PIXEL");
           const y = this.stack.pop()!;
           const x = this.stack.pop()!;
-          if (
-            x >= 0 &&
-            y >= 0 &&
-            x < this.frameBuffer[0].length &&
-            y < this.frameBuffer.length
-          ) {
-            this.frameBuffer[y][x] = this.colour;
-          }
+          this.frameBuffer.setPixel(x, y, this.colour);
           break;
 
         case OPCODE_TABLE["DRAW_LINE"]:
@@ -110,11 +129,11 @@ export class VirtualMachine {
           const x1 = this.stack.pop()!;
           if (x1 === x2) {
             for (let y = y1; y <= y2; y++) {
-              this.frameBuffer[y][x1] = this.colour;
+              this.frameBuffer.setPixel(x1, y, this.colour);
             }
           } else if (y1 === y2) {
             for (let x = x1; x <= x2; x++) {
-              this.frameBuffer[y1][x] = this.colour;
+              this.frameBuffer.setPixel(x, y1, this.colour);
             }
           }
           break;
@@ -126,19 +145,13 @@ export class VirtualMachine {
           const startX = this.stack.pop()!;
           for (let y = startY; y < startY + height; y++) {
             for (let x = startX; x < startX + width; x++) {
-              if (
-                x >= 0 &&
-                y >= 0 &&
-                x < this.frameBuffer[0].length &&
-                y < this.frameBuffer.length
-              ) {
-                this.frameBuffer[y][x] = this.colour;
-              }
+              this.frameBuffer.setPixel(x, y, this.colour);
             }
           }
           break;
 
         case OPCODE_TABLE["HALT"]:
+          console.log("HALT");
           return this.frameBuffer;
 
         default:

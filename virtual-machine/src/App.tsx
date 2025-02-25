@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { VirtualMachine } from "./utils/VirtualMachine";
 import PixelGrid from "./PixelGrid";
+import { FrameBuffer } from "./utils/FrameBuffer";
 
 export default function App() {
-  const [frameBuffer, setFrameBuffer] = useState<string[][]>([]);
+  const [frameBuffer, setFrameBuffer] = useState<FrameBuffer>(
+    new FrameBuffer()
+  );
 
   useEffect(() => {
     const codeFromQuery = getQueryParam("code");
     console.log("codeFromQuery: ", codeFromQuery);
     if (codeFromQuery) {
-      const vm = new VirtualMachine(codeFromQuery, 16, 16);
+      const vm = new VirtualMachine(codeFromQuery);
       const outputBuffer = vm.execute();
       setFrameBuffer(outputBuffer);
       console.log(outputBuffer);
@@ -22,9 +25,9 @@ export default function App() {
   }
 
   return (
-    <div>
-      <h1>Virtual Machine Frame Buffer</h1>
-      {/* <PixelGrid frameBuffer={frameBuffer} /> */}
+    <div style={{ padding: "1rem" }}>
+      <h1>QR-VM</h1>
+      <PixelGrid frameBuffer={frameBuffer} />
     </div>
   );
 }

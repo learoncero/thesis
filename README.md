@@ -1,14 +1,32 @@
 # QR Code Virtual Machine
-## Installation
-Python must be installed to execute the script. You can download it from the official website: https://www.python.org/downloads/.
 
-Additionally, you need to install the required dependencies. Navigate to the `thesis` folder and run the following command:
+## Installation
+
+### Prerequisites
+
+- **Python** must be installed to execute the QR code generation script. Download it from the official [Python website](https://www.python.org/downloads/).
+- **Node.js & npm** must be installed to run the Virtual Machine web application. Download it from the official [Node.js website](https://nodejs.org/en/download).
+  - Run the following command to update npm: `npm install npm --global`
+
+### Installing Dependencies
+
+1. **Install Python Dependencies**\
+   Navigate to the `thesis` folder and install the required Python packages:
 
 ```sh
 pip install -r requirements.txt
 ```
 
+2. **Install JavaScript Dependencies**\
+   Navigate to the `virtual-machine` folder and install the necessary npm packages:
+
+```sh
+cd virtual-machine
+npm install
+```
+
 ## Modifying the QR Code Generation
+
 The virtual machine (VM) executes a simple stack-based programme encoded as binary instructions. The programme is defined in the programmeme_text variable within the Python script.
 
 Each instruction consists of an opcode and optional operands. The available instructions are:
@@ -27,7 +45,7 @@ HALT               # Stops execution
 
 To modify the programme, edit the programmeme_text variable in `main.py` and add or change instructions as needed.
 
-Example:
+**Example:**
 
 ```python
 programmeme_text = """
@@ -45,6 +63,7 @@ HALT
 This programme sets the colour to red (255, 0, 0) and draws a pixel at (5,5).
 
 ## Running the Python QR Code Generation Script
+
 Once you have installed the dependencies, run the script with:
 
 ```sh
@@ -52,22 +71,24 @@ python main.py
 ```
 
 This will:
+
 1. Convert the programme into a binary representation.
 2. Encode the binary programme in a QR code.
 3. Save the QR code as `code-generation/qr.png`.
 
 ## Running the VM
+
 The VM is a TypeScript-based interpreter that executes the program encoded in the QR code. To run the VM, follow these steps:
 
 1. **Navigate to the Virtual Machine Folder**\
-Open a terminal and change into the `virtual-machine` directory:
+   Open a terminal and change into the `virtual-machine` directory:
 
 ```sh
 cd virtual-machine
 ```
 
 2. **Start the Development Server**\
-Run the following command to start the VM in a local development environment:
+   Run the following command to start the VM in a local development environment:
 
 ```sh
 npm run dev
@@ -76,9 +97,10 @@ npm run dev
 This will launch a web server and make the VM accessible in your browser.
 
 3. **Execute the Programme**
-Scan the generated QR code using a QR scanner (e.g., https://scanqr.org/#scan).
+   Scan the generated QR code using a QR scanner (e.g., https://scanqr.org/#scan).
 
 The QR code contains a URL in the format:
+
 ```ruby
 http://localhost:5173/?code=<binary_code>
 ```

@@ -2,39 +2,41 @@ import { FrameBuffer } from "./FrameBuffer";
 import { Stack } from "./Stack";
 
 const OPCODE_TABLE: { [key: string]: string } = {
-  PUSH: "00000001",
-  POP: "00000010",
-  DUP: "00000011",
-  ADD: "00000100",
-  SUB: "00000101",
-  MUL: "00000110",
-  DIV: "00000111",
-  SET_COLOUR: "00001000",
-  DRAW_PIXEL: "00001001",
-  DRAW_LINE: "00001010",
-  DRAW_RECT: "00001011",
-  HALT: "00001100",
+  PUSH: "1",
+  POP: "2",
+  DUP: "3",
+  ADD: "4",
+  SUB: "5",
+  MUL: "6",
+  DIV: "7",
+  SET_COLOUR: "8", // 3x PUSH
+  DRAW_PIXEL: "9", // 2x PUSH
+  DRAW_LINE: "A", // 4x PUSH
+  DRAW_RECT: "B", // 4x PUSH
+  JUMP: "C", // 1x PUSH
+  JUMP_EQ: "D", // 2x PUSH
+  JUMP_NE: "E", // 2x PUSH
+  HALT: "F",
 };
 
 export class VirtualMachine {
-  binaryCode: string;
+  hexCode: string;
   stack: Stack;
   instructionPointer: number;
   frameBuffer: FrameBuffer;
   colour: string;
 
-  constructor(binaryCode: string) {
-    this.binaryCode = binaryCode;
+  constructor(hexCode: string) {
+    this.hexCode = hexCode;
     this.stack = new Stack();
     this.instructionPointer = 0;
     this.frameBuffer = new FrameBuffer(5, 5);
-    this.colour = "#FFFFFF"; // Default white color
+    this.colour = "//FFFFFF"; // Default white color
   }
 
-  // Helper: Fetch next 8-bit opcode
   fetchByte(): string {
-    const opcodeSize = 8;
-    const byte = this.binaryCode.slice(
+    const opcodeSize = 1;
+    const byte = this.hexCode.slice(
       this.instructionPointer,
       this.instructionPointer + opcodeSize
     );
@@ -42,21 +44,18 @@ export class VirtualMachine {
     return byte;
   }
 
-  // Helper: Fetch and decode 16-bit operand
   fetchOperand(): number {
-    const operandSize = 16;
-    const operand = this.binaryCode.slice(
+    const operandSize = 2;
+    const operand = this.hexCode.slice(
       this.instructionPointer,
       this.instructionPointer + operandSize
     );
     this.instructionPointer += operandSize;
-    return parseInt(operand, 2);
+    return parseInt(operand, 16);
   }
 
   execute(): FrameBuffer {
-    while (this.instructionPointer < this.binaryCode.length) {
-      console.log("ip: ", this.instructionPointer);
-      console.log("stack: ", this.stack);
+    while (this.instructionPointer < this.hexCode.length) {
       const opcode = this.fetchByte();
 
       switch (opcode) {
@@ -108,7 +107,6 @@ export class VirtualMachine {
           break;
 
         case OPCODE_TABLE["SET_COLOUR"]:
-          console.log("SET_COLOUR");
           const b = this.stack.pop()!;
           const g = this.stack.pop()!;
           const r = this.stack.pop()!;
@@ -116,7 +114,6 @@ export class VirtualMachine {
           break;
 
         case OPCODE_TABLE["DRAW_PIXEL"]:
-          console.log("DRAW_PIXEL");
           const y = this.stack.pop()!;
           const x = this.stack.pop()!;
           this.frameBuffer.setPixel(x, y, this.colour);
@@ -151,7 +148,6 @@ export class VirtualMachine {
           break;
 
         case OPCODE_TABLE["HALT"]:
-          console.log("HALT");
           return this.frameBuffer;
 
         default:

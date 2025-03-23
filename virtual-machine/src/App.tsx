@@ -10,12 +10,10 @@ export default function App() {
 
   useEffect(() => {
     const codeFromQuery = getQueryParam("code");
-    console.log("codeFromQuery: ", codeFromQuery);
     if (codeFromQuery) {
       const vm = new VirtualMachine(codeFromQuery);
       const outputBuffer = vm.execute();
       setFrameBuffer(outputBuffer);
-      console.log(outputBuffer);
     }
   }, []);
 

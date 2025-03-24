@@ -27,7 +27,7 @@ npm install
 
 ## Modifying the QR Code Generation
 
-The virtual machine (VM) executes a simple stack-based programme encoded as binary instructions. The programme is defined in the programmeme_text variable within the Python script.
+The virtual machine (VM) executes a simple stack-based programme encoded as hex instructions. The programme is defined in the programmeme_text variable within the Python script.
 
 Each instruction consists of an opcode and optional operands. The available instructions are:
 
@@ -72,8 +72,8 @@ python main.py
 
 This will:
 
-1. Convert the programme into a binary representation.
-2. Encode the binary programme in a QR code.
+1. Convert the programme into a hex representation.
+2. Encode the hex programme in a QR code.
 3. Save the QR code as `code-generation/qr.png`.
 
 ## Running the VM
@@ -102,7 +102,7 @@ This will launch a web server and make the VM accessible in your browser.
 The QR code contains a URL in the format:
 
 ```ruby
-http://localhost:5173/?code=<binary_code>
+http://localhost:5173/?code=<hex_code>
 ```
 
 Open this URL in your browser.

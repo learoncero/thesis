@@ -1,23 +1,6 @@
+import { OPCODE_TABLE } from "./constants";
 import { FrameBuffer } from "./FrameBuffer";
 import { Stack } from "./Stack";
-
-const OPCODE_TABLE: { [key: string]: string } = {
-  PUSH: "1",
-  POP: "2",
-  DUP: "3",
-  ADD: "4",
-  SUB: "5",
-  MUL: "6",
-  DIV: "7",
-  SET_COLOUR: "8", // 3x PUSH
-  DRAW_PIXEL: "9", // 2x PUSH
-  DRAW_LINE: "A", // 4x PUSH
-  DRAW_RECT: "B", // 4x PUSH
-  JUMP: "C", // 1x PUSH
-  JUMP_EQ: "D", // 2x PUSH
-  JUMP_NE: "E", // 2x PUSH
-  HALT: "F",
-};
 
 export class VirtualMachine {
   hexCode: string;
@@ -144,6 +127,28 @@ export class VirtualMachine {
             for (let x = startX; x < startX + width; x++) {
               this.frameBuffer.setPixel(x, y, this.colour);
             }
+          }
+          break;
+
+        case OPCODE_TABLE["JUMP"]:
+          this.instructionPointer += this.stack.pop()!;
+          break;
+
+        case OPCODE_TABLE["JUMP_EQ"]:
+          const addressEQ = this.stack.pop()!;
+          const valueEQ1 = this.stack.pop()!;
+          const valueEQ2 = this.stack.pop()!;
+          if (valueEQ1 === valueEQ2) {
+            this.instructionPointer += addressEQ;
+          }
+          break;
+
+        case OPCODE_TABLE["JUMP_NE"]:
+          const addressNE = this.stack.pop()!;
+          const valueNE1 = this.stack.pop()!;
+          const valueNE2 = this.stack.pop()!;
+          if (valueNE1 !== valueNE2) {
+            this.instructionPointer += addressNE;
           }
           break;
 

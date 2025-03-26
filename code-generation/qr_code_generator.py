@@ -9,7 +9,7 @@ class QRCodeGenerator:
         with open("code-generation/programme_text.txt") as f:
             return f.read()
 
-    def assemble_program(self):
+    def assemble_programme(self):
         hex_code = []
 
         for line in self.programme_text.strip().split("\n"):
@@ -30,9 +30,9 @@ class QRCodeGenerator:
 
         return hex_string
 
-    def generate_qr_code(self, base64_encoded):
-        vm_url = f"http://localhost:5173/?code={base64_encoded}"
-        # vm_url = f"https://qr-vm.netlify.app?code={base64_encoded}"
+    def generate_qr_code(self, hex_string):
+        vm_url = f"http://localhost:5173/?code={hex_string}"
+        # vm_url = f"https://qr-vm.netlify.app?code={hex_string}"
         qr = qrcode.QRCode(
             version=10,
             error_correction=qrcode.constants.ERROR_CORRECT_L,

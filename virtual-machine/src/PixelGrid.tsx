@@ -5,7 +5,7 @@ type Props = {
 };
 
 export default function PixelGrid({ frameBuffer }: Props) {
-  if (!frameBuffer || frameBuffer.isEmpty()) {
+  if (!frameBuffer) {
     return <div>No data available</div>;
   }
 

@@ -1,12 +1,12 @@
 import qrcode
-from constants import OPCODE_TABLE
+from utils.constants import OPCODE_TABLE
 
 class QRCodeGenerator:
     def __init__(self):
         self.programme_text = self.read_programme_text()
 
     def read_programme_text(self):
-        with open("code-generation/programme_text.txt") as f:
+        with open("code-generation/assets/programme_text_fhv.txt") as f:
             return f.read()
 
     def assemble_programme(self):
@@ -25,6 +25,8 @@ class QRCodeGenerator:
                         hex_code.append(f"{opcode:01X}{operand_value:02X}")
                 else:
                     hex_code.append(f"{opcode:01X}")
+            else:
+                raise ValueError(f"Unknown mnemonic: {mnemonic}")
 
         hex_string = "".join(hex_code)
 

@@ -1,4 +1,4 @@
-from qr_code_generator import QRCodeGenerator
+from utils.qr_code_generator import QRCodeGenerator
 
 if __name__ == "__main__":
     qr_code_generator = QRCodeGenerator()

@@ -15,7 +15,6 @@ export default function App() {
     if (codeFromQuery) {
       const vm = new VirtualMachine(codeFromQuery);
       const output = vm.execute();
-      console.log("Output:", output);
 
       if (output instanceof FrameBuffer && !output.isEmpty()) {
         setFrameBuffer(output);
